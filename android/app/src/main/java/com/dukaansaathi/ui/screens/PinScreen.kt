@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dukaansaathi.AppViewModel
+import com.dukaansaathi.DEMO_PIN
+import com.dukaansaathi.knownPhones
 import com.dukaansaathi.ui.Ds
 import com.dukaansaathi.ui.Keypad
 import com.dukaansaathi.ui.PIN_LENGTH
@@ -43,6 +45,8 @@ private fun prettyPhone(p: String) = "+91 ${p.take(5)} ${p.drop(5)}"
 @Composable
 fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
     var pin by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
+    val returning = vm.phone in knownPhones
 
     Column(
         Modifier
@@ -56,9 +60,9 @@ fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
             contentAlignment = Alignment.Center,
         ) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back", Modifier.size(32.dp)) }
 
-        Text("Create your PIN", Modifier.padding(top = 4.dp), fontFamily = Yatra, fontSize = 42.sp, lineHeight = 46.sp)
+        Text(if (returning) "Welcome back" else "Create your PIN", Modifier.padding(top = 4.dp), fontFamily = Yatra, fontSize = 42.sp, lineHeight = 46.sp)
         Text(
-            "Pick 6 digits you will remember. You will enter it every time you open the app.",
+            if (returning) "Enter your 6-digit PIN." else "Pick 6 digits you will remember. You will enter it every time you open the app.",
             Modifier.padding(top = 8.dp),
             fontSize = 22.sp,
             color = Ds.Sub,
@@ -87,19 +91,38 @@ fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
         Spacer(Modifier.size(28.dp))
         PinBlanks(pin)
 
+        if (error.isNotEmpty()) {
+            Text(error, Modifier.padding(top = 12.dp), color = Ds.Stamp, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+        }
+
+        if (returning) {
+            Column(Modifier.padding(top = 14.dp)) {
+                Box(Modifier.heightIn(min = 48.dp), contentAlignment = Alignment.CenterStart) {
+                    Text("Forgot PIN?", color = Ds.Primary, fontSize = 22.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline)
+                }
+                Text("Ask your distributor to reset it.", fontSize = 18.sp, color = Ds.Sub)
+            }
+        }
+
         Spacer(Modifier.weight(1f))
 
         PrimaryButton(
-            "Set PIN and continue",
+            if (returning) "Login" else "Set PIN and continue",
             onClick = {
-                vm.signedIn = true
-                onSignedIn()
+                if (returning && pin != DEMO_PIN) {
+                    error = "Wrong PIN. Try again."
+                    pin = ""
+                } else {
+                    vm.signedIn = true
+                    onSignedIn()
+                }
             },
             enabled = pin.length == PIN_LENGTH,
             height = 62.dp,
         )
         Spacer(Modifier.size(14.dp))
         Keypad { key ->
+            error = ""
             pin = if (key == "del") pin.dropLast(1) else if (pin.length < PIN_LENGTH) pin + key else pin
         }
     }
