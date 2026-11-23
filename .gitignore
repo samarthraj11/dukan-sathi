@@ -1,6 +1,7 @@
-node_modules
-dist
-*.db
-*.db-journal
+build/
+.gradle/
+local.properties
+.idea/
+*.iml
+.DS_Store
 .env
-*.tsbuildinfo
