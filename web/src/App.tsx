@@ -1,10 +1,14 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useApp } from "./state";
+import PhoneScreen from "./screens/PhoneScreen";
 
 export default function App() {
+  const { signedIn } = useApp();
   return (
     <div className="app">
       <Routes>
-        <Route path="*" element={<p style={{ padding: 24 }}>Dukaan Saathi</p>} />
+        <Route path="/login" element={<PhoneScreen />} />
+        <Route path="*" element={<Navigate to={signedIn ? "/" : "/login"} replace />} />
       </Routes>
     </div>
   );
