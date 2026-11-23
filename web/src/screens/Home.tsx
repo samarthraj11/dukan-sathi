@@ -45,7 +45,7 @@ export default function Home() {
           ) : (
             <>
               <p className="home__label">{distributor.name}</p>
-              <h1>Nothing on the way</h1>
+              <h1>All delivered</h1>
             </>
           )}
           <div className="home__row">
