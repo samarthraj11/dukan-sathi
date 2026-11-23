@@ -6,7 +6,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.IntOffset
+import androidx.navigation.NavBackStackEntry
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -41,7 +49,45 @@ fun AppRoot() {
     val vm: AppViewModel = viewModel()
     val nav = rememberNavController()
 
-    NavHost(nav, startDestination = "login") {
+    val tabs = listOf("home", "catalogue", "orders", "account")
+    fun AnimatedContentTransitionScope<NavBackStackEntry>.dir(): Int? {
+        val from = tabs.indexOf(initialState.destination.route)
+        val to = tabs.indexOf(targetState.destination.route)
+        return if (from >= 0 && to >= 0 && from != to) (if (to > from) 1 else -1) else null
+    }
+    val slide = tween<IntOffset>(300)
+    NavHost(
+        nav,
+        startDestination = "login",
+        enterTransition = {
+            when (dir()) {
+                1 -> slideInHorizontally(slide) { it }
+                -1 -> slideInHorizontally(slide) { -it }
+                else -> fadeIn(tween(250))
+            }
+        },
+        exitTransition = {
+            when (dir()) {
+                1 -> slideOutHorizontally(slide) { -it }
+                -1 -> slideOutHorizontally(slide) { it }
+                else -> fadeOut(tween(250))
+            }
+        },
+        popEnterTransition = {
+            when (dir()) {
+                1 -> slideInHorizontally(slide) { it }
+                -1 -> slideInHorizontally(slide) { -it }
+                else -> fadeIn(tween(250))
+            }
+        },
+        popExitTransition = {
+            when (dir()) {
+                1 -> slideOutHorizontally(slide) { -it }
+                -1 -> slideOutHorizontally(slide) { it }
+                else -> fadeOut(tween(250))
+            }
+        },
+    ) {
         composable("login") { PhoneScreen(vm) { nav.navigate("pin") } }
         composable("home") {
             HomeScreen(vm, onTab = nav::goTab, onAddDistributor = { nav.navigate("add") }, onOpenCart = { nav.navigate("cart") })

@@ -1,5 +1,14 @@
 package com.dukaansaathi.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -94,8 +103,8 @@ fun PrimaryButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Ds.Primary,
             contentColor = Color.White,
-            disabledContainerColor = Ds.Soft,
-            disabledContentColor = Ds.Sub,
+            disabledContainerColor = Ds.Primary.copy(alpha = 0.4f),
+            disabledContentColor = Color.White,
         ),
     ) { Text(text, fontSize = fontSize, fontWeight = FontWeight.Bold) }
 }
@@ -216,6 +225,12 @@ const val PIN_LENGTH = 6
 /** Six writing lines; a dot appears on each digit entered. */
 @Composable
 fun PinBlanks(value: String) {
+    val blink = rememberInfiniteTransition(label = "cursor").animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(tween(530, easing = LinearEasing), RepeatMode.Reverse),
+        label = "cursorAlpha",
+    )
     Row(
         Modifier
             .fillMaxWidth()
@@ -236,6 +251,9 @@ fun PinBlanks(value: String) {
                 contentAlignment = Alignment.Center,
             ) {
                 if (filled) Box(Modifier.size(20.dp).clip(CircleShape).background(Ds.Ink))
+                else if (i == value.length) Box(
+                    Modifier.width(2.5.dp).height(30.dp).graphicsLayer { alpha = blink.value }.background(Ds.Primary),
+                )
             }
         }
     }
