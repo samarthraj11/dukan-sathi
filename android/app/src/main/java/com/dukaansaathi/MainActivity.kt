@@ -18,6 +18,7 @@ import com.dukaansaathi.ui.screens.AddDistributorScreen
 import com.dukaansaathi.ui.screens.CartScreen
 import com.dukaansaathi.ui.screens.CatalogueScreen
 import com.dukaansaathi.ui.screens.HomeScreen
+import com.dukaansaathi.ui.screens.OrderPlacedScreen
 import com.dukaansaathi.ui.screens.PhoneScreen
 import com.dukaansaathi.ui.screens.PinScreen
 
@@ -51,6 +52,14 @@ fun AppRoot() {
                 onBack = { nav.popBackStack() },
                 onOpenCatalogue = { nav.goTab(Tab.Catalogue) },
                 onPlaced = { id -> nav.navigate("placed/$id") { popUpTo("cart") { inclusive = true } } },
+            )
+        }
+        composable("placed/{orderId}") { entry ->
+            OrderPlacedScreen(
+                vm,
+                orderId = entry.arguments?.getString("orderId").orEmpty(),
+                onDone = { nav.navigate("home") { popUpTo("home") { inclusive = true } } },
+                onEdit = { nav.goTab(Tab.Orders) },
             )
         }
         composable("add") { AddDistributorScreen(onBack = { nav.popBackStack() }) }
