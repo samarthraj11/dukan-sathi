@@ -15,7 +15,7 @@ data class Totals(val lines: List<Line>, val subtotal: Int, val gst: Int, val to
 fun priceItems(items: Map<String, Int>): Totals {
     val lines = items.filterValues { it > 0 }.mapNotNull { (id, qty) ->
         products.firstOrNull { it.id == id }?.let { Line(it, qty, it.price * qty) }
-    }
+    }.sortedBy { products.indexOf(it.product) } // catalogue order, not insertion order
     val subtotal = lines.sumOf { it.total }
     val gst = (subtotal * GST_RATE).roundToInt()
     return Totals(lines, subtotal, gst, subtotal + gst, lines.sumOf { it.qty })
