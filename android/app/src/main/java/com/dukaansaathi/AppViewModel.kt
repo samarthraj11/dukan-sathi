@@ -25,10 +25,10 @@ fun priceItems(items: Map<String, Int>): Totals {
 class AppViewModel : ViewModel() {
     var phone by mutableStateOf("")
     var signedIn by mutableStateOf(false)
-    var distributorId by mutableStateOf("sharma")
+    var distributorId by mutableStateOf("vaishnavi")
 
     // Cart is kept per distributor: key is "distributorId/productId", value is cartons.
-    private val cart = mutableStateMapOf("sharma/marie" to 5, "sharma/glucose" to 3, "sharma/cream" to 2)
+    private val cart = mutableStateMapOf("vaishnavi/marie" to 5, "vaishnavi/glucose" to 3, "vaishnavi/cream" to 2)
     val orders = mutableStateListOf<Order>().apply { addAll(pastOrders) }
 
     val distributor: Distributor get() = distributors.first { it.id == distributorId }
