@@ -14,6 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dukaansaathi.ui.DukaanTheme
 import com.dukaansaathi.ui.Tab
+import com.dukaansaathi.ui.screens.AccountScreen
+import com.dukaansaathi.ui.screens.AccountScreen
 import com.dukaansaathi.ui.screens.AddDistributorScreen
 import com.dukaansaathi.ui.screens.CartScreen
 import com.dukaansaathi.ui.screens.CatalogueScreen
@@ -64,6 +66,16 @@ fun AppRoot() {
             )
         }
         composable("orders") { OrdersScreen(vm, onTab = nav::goTab) }
+        composable("account") {
+            AccountScreen(
+                vm,
+                onTab = nav::goTab,
+                onLogout = {
+                    vm.signOut()
+                    nav.navigate("login") { popUpTo(0) }
+                },
+            )
+        }
         composable("add") { AddDistributorScreen(onBack = { nav.popBackStack() }) }
         composable("pin") {
             PinScreen(
