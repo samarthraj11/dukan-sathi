@@ -19,6 +19,7 @@ import com.dukaansaathi.ui.screens.CartScreen
 import com.dukaansaathi.ui.screens.CatalogueScreen
 import com.dukaansaathi.ui.screens.HomeScreen
 import com.dukaansaathi.ui.screens.OrderPlacedScreen
+import com.dukaansaathi.ui.screens.OrdersScreen
 import com.dukaansaathi.ui.screens.PhoneScreen
 import com.dukaansaathi.ui.screens.PinScreen
 
@@ -62,6 +63,7 @@ fun AppRoot() {
                 onEdit = { nav.goTab(Tab.Orders) },
             )
         }
+        composable("orders") { OrdersScreen(vm, onTab = nav::goTab) }
         composable("add") { AddDistributorScreen(onBack = { nav.popBackStack() }) }
         composable("pin") {
             PinScreen(
