@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dukaansaathi.ui.DukaanTheme
 import com.dukaansaathi.ui.screens.PhoneScreen
+import com.dukaansaathi.ui.screens.PinScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,5 +33,12 @@ fun AppRoot() {
 
     NavHost(nav, startDestination = "login") {
         composable("login") { PhoneScreen(vm) { nav.navigate("pin") } }
+        composable("pin") {
+            PinScreen(
+                vm,
+                onBack = { nav.popBackStack() },
+                onSignedIn = { nav.navigate("home") { popUpTo("login") { inclusive = true } } },
+            )
+        }
     }
 }
