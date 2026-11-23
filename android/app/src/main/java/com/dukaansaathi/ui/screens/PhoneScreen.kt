@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.dukaansaathi.AppViewModel
 import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.PhoneTransformation
+import com.dukaansaathi.ui.PhoneField
 import com.dukaansaathi.ui.PrimaryButton
 import com.dukaansaathi.ui.Yatra
 
@@ -87,44 +87,7 @@ fun PhoneScreen(vm: AppViewModel, onContinue: () -> Unit) {
 
         Text("Your mobile number", Modifier.padding(top = 32.dp, bottom = 8.dp), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
 
-        val shape = RoundedCornerShape(12.dp)
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = 72.dp)
-                .border(2.5.dp, Ds.Primary, shape)
-                .clip(shape),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                Modifier
-                    .background(Ds.Soft)
-                    .heightIn(min = 72.dp)
-                    .drawBehind { drawRect(Ds.LineStrong, Offset(size.width - 2.dp.toPx(), 0f), Size(2.dp.toPx(), size.height)) }
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) { Text("+91", fontSize = 30.sp, fontWeight = FontWeight.Bold) }
-
-            BasicTextField(
-                value = vm.phone,
-                onValueChange = { vm.phone = it.filter(Char::isDigit).take(10) },
-                modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
-                singleLine = true,
-                textStyle = TextStyle(fontFamily = com.dukaansaathi.ui.Mukta, fontSize = 34.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.04.em, color = Ds.Ink),
-                cursorBrush = SolidColor(Ds.Primary),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { if (ready) onContinue() }),
-                visualTransformation = PhoneTransformation,
-                decorationBox = { inner ->
-                    Box(contentAlignment = Alignment.CenterStart) {
-                        if (vm.phone.isEmpty()) {
-                            Text("98765 43210", fontSize = 34.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.04.em, color = Ds.LineStrong)
-                        }
-                        inner()
-                    }
-                },
-            )
-        }
+        PhoneField(vm.phone, { vm.phone = it }, "98765 43210") { if (ready) onContinue() }
         Text("Next you will set a 6-digit PIN. No OTP needed.", Modifier.padding(top = 8.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
 
         Spacer(Modifier.weight(1f))
