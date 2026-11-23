@@ -13,6 +13,7 @@ type AppState = {
   cart: Cart;
   setQty: (productId: string, qty: number) => void;
   fillCart: (items: Record<string, number>) => void;
+  replaceCart: (items: Record<string, number>) => void;
   orders: Order[];
   placeOrder: () => Order | null;
 };
@@ -20,8 +21,8 @@ type AppState = {
 const Ctx = createContext<AppState>(null!);
 export const useApp = () => useContext(Ctx);
 
-export function cartTotals(distributorId: string, cart: Cart) {
-  const lines = Object.entries(cart[distributorId] ?? {})
+export function priceItems(items: Record<string, number>) {
+  const lines = Object.entries(items)
     .filter(([, qty]) => qty > 0)
     .map(([productId, qty]) => {
       const product = products.find((p) => p.id === productId)!;
@@ -32,6 +33,8 @@ export function cartTotals(distributorId: string, cart: Cart) {
   const cartons = lines.reduce((sum, l) => sum + l.qty, 0);
   return { lines, subtotal, gst, total: subtotal + gst, cartons };
 }
+
+export const cartTotals = (distributorId: string, cart: Cart) => priceItems(cart[distributorId] ?? {});
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [phone, setPhone] = useState("");
@@ -56,6 +59,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         })),
       fillCart: (items) =>
         setCart((c) => ({ ...c, [distributorId]: { ...c[distributorId], ...items } })),
+      replaceCart: (items) => setCart((c) => ({ ...c, [distributorId]: { ...items } })),
       orders,
       placeOrder: () => {
         const { total, cartons } = cartTotals(distributorId, cart);

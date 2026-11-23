@@ -63,6 +63,12 @@ export const usualOrder: Record<string, Record<string, number>> = {
   verma: { digestive: 4, crackers: 2 },
 };
 
+// Items of each distributor's most recent delivered order, for "Order again".
+export const lastOrderItems: Record<string, Record<string, number>> = {
+  sharma: { marie: 5, glucose: 3, cream: 2 },
+  verma: { digestive: 4, crackers: 2 },
+};
+
 export const GST_RATE = 0.18;
 export const OFFER_THRESHOLD = 6000;
 
