@@ -43,7 +43,7 @@ export default function Cart() {
             {lines.map(({ product, qty, total: lineTotal }) => (
               <li key={product.id}>
                 <ProductArt art={product.art} size={60} />
-                <div>
+                <div className="cart__info">
                   <strong>{product.name}</strong>
                   <span>{formatRupees(lineTotal)}</span>
                 </div>
