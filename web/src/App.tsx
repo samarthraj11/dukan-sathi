@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { useApp } from "./state";
+import Account from "./screens/Account";
 import AddDistributor from "./screens/AddDistributor";
 import Cart from "./screens/Cart";
 import Catalogue from "./screens/Catalogue";
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/placed" element={<OrderPlaced />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/add-distributor" element={<AddDistributor />} />
         </Route>
         <Route path="*" element={<Navigate to={signedIn ? "/" : "/login"} replace />} />

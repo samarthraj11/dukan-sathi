@@ -8,6 +8,7 @@ type AppState = {
   setPhone: (p: string) => void;
   signedIn: boolean;
   signIn: () => void;
+  signOut: () => void;
   distributorId: string;
   selectDistributor: (id: string) => void;
   cart: Cart;
@@ -49,6 +50,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setPhone,
       signedIn,
       signIn: () => setSignedIn(true),
+      signOut: () => setSignedIn(false),
       distributorId,
       selectDistributor: setDistributorId,
       cart,
