@@ -70,10 +70,9 @@ export default function PinScreen() {
         {returning ? "Login" : "Set PIN and continue"}
       </button>
       <Keypad
-        value={pin}
-        onChange={(v) => {
+        onChange={(update) => {
           setError("");
-          setPin(v);
+          setPin(update);
         }}
       />
     </main>

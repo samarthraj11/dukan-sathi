@@ -18,9 +18,12 @@ export function PinBlanks({ value }: { value: string }) {
 }
 
 /** Calculator-style keypad. Also listens to the physical keyboard. */
-export function Keypad({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const press = (d: string) => value.length < PIN_LENGTH && onChange(value + d);
-  const del = () => onChange(value.slice(0, -1));
+type Update = (prev: string) => string;
+
+export function Keypad({ onChange }: { onChange: (update: Update) => void }) {
+  // Updaters, so quick taps never overwrite each other.
+  const press = (d: string) => onChange((v) => (v.length < PIN_LENGTH ? v + d : v));
+  const del = () => onChange((v) => v.slice(0, -1));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
