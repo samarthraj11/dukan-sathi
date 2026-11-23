@@ -64,3 +64,29 @@
   margin-bottom: 14px;
   font-size: 24px;
 }
+
+.pin__error {
+  margin-top: 12px;
+  color: var(--stamp);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.pin__forgot {
+  align-self: flex-start;
+  margin-top: 14px;
+}
+
+.pin__forgot button {
+  min-height: 48px;
+  color: var(--primary);
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.pin__forgot p {
+  color: var(--sub);
+  font-size: 18px;
+  line-height: 1.4;
+}

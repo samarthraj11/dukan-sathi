@@ -1,5 +1,9 @@
 // Dummy data for the UI-only build. Replaced by the backend later.
 
+// Demo login: this number is an existing user, PIN 123456. Any other number sets a new PIN.
+export const knownPhones = ["9876543210"];
+export const demoPin = "123456";
+
 export type Distributor = {
   id: string;
   name: string;
