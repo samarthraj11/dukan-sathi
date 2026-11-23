@@ -58,7 +58,7 @@ fun DukaanTheme(content: @Composable () -> Unit) {
         ),
     ) {
         Surface(color = Color.White, contentColor = Ds.Ink) {
-            ProvideTextStyle(TextStyle(fontFamily = Mukta, fontSize = 18.sp, color = Ds.Ink), content)
+            ProvideTextStyle(TextStyle(fontFamily = Mukta, fontSize = 18.sp), content)
         }
     }
 }
