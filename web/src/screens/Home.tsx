@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
-import DistributorChip from "../components/DistributorChip";
+import DistributorSwitcher from "../components/DistributorSwitcher";
 import Icon from "../components/Icon";
 import ProductArt from "../components/ProductArt";
 import { distributors, formatRupees, lastOrderItems, products, usualOrder, type Order } from "../data";
@@ -28,7 +28,7 @@ export default function Home() {
           <span className="home__me" role="img" aria-label="Gupta General Store">
             G
           </span>
-          <DistributorChip distributor={distributor} />
+          <DistributorSwitcher />
         </div>
 
         <div className="home__status">
