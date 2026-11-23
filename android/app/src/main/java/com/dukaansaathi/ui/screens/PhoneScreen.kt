@@ -1,5 +1,7 @@
 package com.dukaansaathi.ui.screens
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -57,43 +58,49 @@ fun PhoneScreen(vm: AppViewModel, onContinue: () -> Unit) {
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .imePadding()
-            .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 32.dp),
+            .imePadding(),
     ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            LangTab("English", lang == Lang.English, 20.sp) { lang = Lang.English }
-            LangTab("हिन्दी", lang == Lang.Hindi, 21.sp) { lang = Lang.Hindi }
-        }
-
-        // Rubber-stamp logo: a double border drawn as two thin ones.
-        Box(
+        // Scrolls when the keyboard is open, so the button below stays reachable.
+        Column(
             Modifier
-                .padding(top = 36.dp)
-                .border(1.5.dp, Ds.Stamp, RoundedCornerShape(6.dp))
-                .padding(3.dp)
-                .border(1.5.dp, Ds.Stamp, RoundedCornerShape(4.dp))
-                .padding(horizontal = 15.dp, vertical = 8.dp),
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp),
         ) {
-            Column {
-                Text("Dukaan Saathi", color = Ds.Stamp, fontFamily = Yatra, fontSize = 36.sp, maxLines = 1, softWrap = false)
-                Text("दुकान साथी", color = Ds.Stamp, fontFamily = Yatra, fontSize = 30.sp)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                LangTab("English", lang == Lang.English, 20.sp) { lang = Lang.English }
+                LangTab("हिन्दी", lang == Lang.Hindi, 21.sp) { lang = Lang.Hindi }
             }
+
+            // Rubber-stamp logo: a double border drawn as two thin ones.
+            Box(
+                Modifier
+                    .padding(top = 36.dp)
+                    .border(1.5.dp, Ds.Stamp, RoundedCornerShape(6.dp))
+                    .padding(3.dp)
+                    .border(1.5.dp, Ds.Stamp, RoundedCornerShape(4.dp))
+                    .padding(horizontal = 15.dp, vertical = 8.dp),
+            ) {
+                Column {
+                    Text("Dukaan Saathi", color = Ds.Stamp, fontFamily = Yatra, fontSize = 36.sp, maxLines = 1, softWrap = false)
+                    Text("दुकान साथी", color = Ds.Stamp, fontFamily = Yatra, fontSize = 30.sp)
+                }
+            }
+
+            Column(Modifier.padding(top = 32.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("Order from your distributor. No calls, no paper slips.", fontSize = 26.sp, fontWeight = FontWeight.SemiBold, lineHeight = 34.sp)
+                Text("फ़ोन और पर्ची की ज़रूरत नहीं।", fontSize = 23.sp, fontWeight = FontWeight.Medium, color = Ds.Sub, lineHeight = 32.sp)
+            }
+
+            Text("Your mobile number", Modifier.padding(top = 32.dp, bottom = 8.dp), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+            PhoneField(vm.phone, { vm.phone = it }, "98765 43210") { if (ready) onContinue() }
+            Text("Next you will set a 6-digit PIN. No OTP needed.", Modifier.padding(top = 8.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
         }
 
-        Column(Modifier.padding(top = 32.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("Order from your distributor. No calls, no paper slips.", fontSize = 26.sp, fontWeight = FontWeight.SemiBold, lineHeight = 34.sp)
-            Text("फ़ोन और पर्ची की ज़रूरत नहीं।", fontSize = 23.sp, fontWeight = FontWeight.Medium, color = Ds.Sub, lineHeight = 32.sp)
+        Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)) {
+            PrimaryButton("Continue", onContinue, enabled = ready, height = 68.dp, fontSize = 25.sp)
+            Text("Distributor? Use the number registered with us.", Modifier.padding(top = 14.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
         }
-
-        Text("Your mobile number", Modifier.padding(top = 32.dp, bottom = 8.dp), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-
-        PhoneField(vm.phone, { vm.phone = it }, "98765 43210") { if (ready) onContinue() }
-        Text("Next you will set a 6-digit PIN. No OTP needed.", Modifier.padding(top = 8.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
-
-        Spacer(Modifier.weight(1f))
-
-        PrimaryButton("Continue", onContinue, enabled = ready, height = 68.dp, fontSize = 25.sp)
-        Text("Distributor? Use the number registered with us.", Modifier.padding(top = 14.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
     }
 }
 
