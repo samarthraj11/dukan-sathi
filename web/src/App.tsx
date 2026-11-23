@@ -4,6 +4,7 @@ import AddDistributor from "./screens/AddDistributor";
 import Cart from "./screens/Cart";
 import Catalogue from "./screens/Catalogue";
 import Home from "./screens/Home";
+import OrderPlaced from "./screens/OrderPlaced";
 import PhoneScreen from "./screens/PhoneScreen";
 import PinScreen from "./screens/PinScreen";
 
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/catalogue" element={<Catalogue />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/placed" element={<OrderPlaced />} />
           <Route path="/add-distributor" element={<AddDistributor />} />
         </Route>
         <Route path="*" element={<Navigate to={signedIn ? "/" : "/login"} replace />} />
