@@ -37,7 +37,7 @@ fun AppRoot() {
     NavHost(nav, startDestination = "login") {
         composable("login") { PhoneScreen(vm) { nav.navigate("pin") } }
         composable("home") {
-            HomeScreen(vm, onTab = nav::goTab, onSwitch = { }, onOpenCart = { nav.navigate("cart") })
+            HomeScreen(vm, onTab = nav::goTab, onAddDistributor = { nav.navigate("add") }, onOpenCart = { nav.navigate("cart") })
         }
         composable("pin") {
             PinScreen(

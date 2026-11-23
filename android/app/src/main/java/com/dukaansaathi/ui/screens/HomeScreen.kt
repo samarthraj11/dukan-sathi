@@ -28,6 +28,10 @@ import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +50,7 @@ import com.dukaansaathi.rupees
 import com.dukaansaathi.ui.BottomNav
 import com.dukaansaathi.ui.Ds
 import com.dukaansaathi.ui.DistributorChip
+import com.dukaansaathi.ui.DistributorSheet
 import com.dukaansaathi.ui.OutlineButton
 import com.dukaansaathi.ui.ProductArt
 import com.dukaansaathi.ui.Tab
@@ -53,7 +58,8 @@ import com.dukaansaathi.ui.Yatra
 import com.dukaansaathi.usualOrder
 
 @Composable
-fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onSwitch: () -> Unit, onOpenCart: () -> Unit) {
+fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> Unit, onOpenCart: () -> Unit) {
+    var sheetOpen by remember { mutableStateOf(false) }
     val distributor = vm.distributor
     val active = vm.orders.firstOrNull { it.distributorId == distributor.id && it.status != OrderStatus.Delivered }
     val last = priceItems(lastOrderItems[distributor.id].orEmpty())
@@ -78,7 +84,7 @@ fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onSwitch: () -> Unit, onO
                         .semantics { contentDescription = "Gupta General Store" },
                     contentAlignment = Alignment.Center,
                 ) { Text("G", color = Ds.Gold, fontFamily = Yatra, fontSize = 26.sp) }
-                DistributorChip(distributor, onClick = onSwitch)
+                DistributorChip(distributor, onClick = { sheetOpen = true })
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -194,6 +200,13 @@ fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onSwitch: () -> Unit, onO
         }
 
         BottomNav(Tab.Home, onTab)
+    }
+
+    if (sheetOpen) {
+        DistributorSheet(vm, onDismiss = { sheetOpen = false }, onAdd = {
+            sheetOpen = false
+            onAddDistributor()
+        })
     }
 }
 
