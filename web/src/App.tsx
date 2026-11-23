@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { useApp } from "./state";
 import AddDistributor from "./screens/AddDistributor";
+import Catalogue from "./screens/Catalogue";
 import Home from "./screens/Home";
 import PhoneScreen from "./screens/PhoneScreen";
 import PinScreen from "./screens/PinScreen";
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/login/pin" element={<PinScreen />} />
         <Route element={<Private />}>
           <Route path="/" element={<Home />} />
+          <Route path="/catalogue" element={<Catalogue />} />
           <Route path="/add-distributor" element={<AddDistributor />} />
         </Route>
         <Route path="*" element={<Navigate to={signedIn ? "/" : "/login"} replace />} />

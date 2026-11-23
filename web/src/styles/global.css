@@ -59,10 +59,16 @@ h2 {
   display: flex;
   flex-direction: column;
   max-width: 430px;
-  min-height: 100dvh;
+  height: 100dvh;
   margin: 0 auto;
   background: var(--paper);
   overflow: hidden;
+}
+
+/* Screens scroll inside the fixed-height column so bars stay in place. */
+.app > main {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .btn-primary {
