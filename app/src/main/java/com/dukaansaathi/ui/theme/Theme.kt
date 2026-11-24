@@ -1,4 +1,4 @@
-package com.dukaansaathi.ui
+package com.dukaansaathi.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface

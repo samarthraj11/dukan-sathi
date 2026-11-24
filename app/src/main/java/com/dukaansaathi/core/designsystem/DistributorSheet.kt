@@ -1,5 +1,11 @@
-package com.dukaansaathi.ui
+package com.dukaansaathi.core.designsystem
 
+import com.dukaansaathi.ui.theme.Ds
+import com.dukaansaathi.ui.theme.Mukta
+import com.dukaansaathi.ui.theme.Yatra
+import com.dukaansaathi.core.model.Distributor
+import com.dukaansaathi.core.model.DistributorStatus
+import com.dukaansaathi.core.model.Tone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,15 +42,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.DistributorStatus
-import com.dukaansaathi.Tone
-import com.dukaansaathi.distributors
 
 /** Bottom sheet: pick which distributor the shop orders from. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DistributorSheet(vm: AppViewModel, onDismiss: () -> Unit, onAdd: () -> Unit) {
+fun DistributorSheet(
+    distributors: List<Distributor>,
+    selectedId: String,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onAdd: () -> Unit,
+) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -60,7 +68,7 @@ fun DistributorSheet(vm: AppViewModel, onDismiss: () -> Unit, onAdd: () -> Unit)
             Text("Order from", fontFamily = Yatra, fontSize = 30.sp, modifier = Modifier.padding(bottom = 2.dp))
 
             distributors.forEach { d ->
-                val selected = d.id == vm.distributorId
+                val selected = d.id == selectedId
                 val pending = d.status == DistributorStatus.Pending
                 val shape = RoundedCornerShape(14.dp)
                 Row(
@@ -82,7 +90,7 @@ fun DistributorSheet(vm: AppViewModel, onDismiss: () -> Unit, onAdd: () -> Unit)
                             },
                         )
                         .clickable(enabled = !pending) {
-                            vm.distributorId = d.id
+                            onSelect(d.id)
                             onDismiss()
                         }
                         .semantics { this.selected = selected }

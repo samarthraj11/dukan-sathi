@@ -1,5 +1,8 @@
-package com.dukaansaathi.ui
+package com.dukaansaathi.core.designsystem
 
+import com.dukaansaathi.ui.theme.Ds
+import com.dukaansaathi.ui.theme.Mukta
+import com.dukaansaathi.ui.theme.Yatra
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box

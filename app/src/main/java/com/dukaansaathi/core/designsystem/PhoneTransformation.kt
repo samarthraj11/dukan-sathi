@@ -1,5 +1,8 @@
-package com.dukaansaathi.ui
+package com.dukaansaathi.core.designsystem
 
+import com.dukaansaathi.ui.theme.Ds
+import com.dukaansaathi.ui.theme.Mukta
+import com.dukaansaathi.ui.theme.Yatra
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText

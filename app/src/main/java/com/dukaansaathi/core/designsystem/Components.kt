@@ -1,5 +1,8 @@
-package com.dukaansaathi.ui
+package com.dukaansaathi.core.designsystem
 
+import com.dukaansaathi.ui.theme.Ds
+import com.dukaansaathi.ui.theme.Mukta
+import com.dukaansaathi.ui.theme.Yatra
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -58,8 +61,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.Art
-import com.dukaansaathi.Distributor
+import com.dukaansaathi.core.model.Art
+import com.dukaansaathi.core.model.Distributor
 
 @Composable
 fun Avatar(initial: String, color: Color, size: Dp = 38.dp, faded: Boolean = false) {
