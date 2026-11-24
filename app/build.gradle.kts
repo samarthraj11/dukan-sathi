@@ -47,8 +47,6 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.orbit.compose)
     implementation(libs.orbit.viewmodel)
-    // Removed once navigation moves to Navigation 3.
-    implementation("androidx.navigation:navigation-compose:2.8.5")
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
