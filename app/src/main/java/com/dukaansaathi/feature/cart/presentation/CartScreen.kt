@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.cart.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,24 +39,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.OFFER_THRESHOLD
-import com.dukaansaathi.products
-import com.dukaansaathi.rupees
-import com.dukaansaathi.ui.Avatar
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.PrimaryButton
-import com.dukaansaathi.ui.ProductArt
-import com.dukaansaathi.ui.Stepper
-import com.dukaansaathi.ui.WalletIcon
-import com.dukaansaathi.ui.Yatra
 
 @Composable
-fun CartScreen(vm: AppViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Unit, onPlaced: (String) -> Unit) {
-    val distributor = vm.distributor
-    val t = vm.totals()
-    val hasOffer = products.any { it.distributorId == distributor.id && it.offer != null }
-    val toGo = OFFER_THRESHOLD - t.subtotal
+fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Unit, onPlaced: (String) -> Unit) {
+    val state by vm.collectAsState()
+    LaunchedEffect(Unit) { vm.refresh() }
+    vm.collectSideEffect { if (it is CartSideEffect.OrderPlaced) onPlaced(it.orderId) }
+    val distributor = state.distributor
+    val t = state.totals
+    val hasOffer = state.hasOffer
+    val toGo = state.toGo
 
     Column(
         Modifier
@@ -141,7 +141,7 @@ fun CartScreen(vm: AppViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Unit
             Spacer(Modifier.height(12.dp))
             PrimaryButton(
                 "Place order",
-                onClick = { vm.placeOrder()?.let { onPlaced(it.id) } },
+                onClick = vm::placeOrder,
                 height = 70.dp,
                 fontSize = 26.sp,
             )

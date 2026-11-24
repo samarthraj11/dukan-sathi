@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.placed.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,14 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.distributors
-import com.dukaansaathi.rupees
-import com.dukaansaathi.ui.Avatar
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.OutlineButton
-import com.dukaansaathi.ui.PrimaryButton
-import com.dukaansaathi.ui.Yatra
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,9 +48,10 @@ private enum class StepState { Done, Now, Todo }
 private data class Step(val name: String, val note: String, val state: StepState)
 
 @Composable
-fun OrderPlacedScreen(vm: AppViewModel, orderId: String, onDone: () -> Unit, onEdit: () -> Unit) {
-    val order = vm.orders.firstOrNull { it.id == orderId } ?: return
-    val distributor = distributors.first { it.id == order.distributorId }
+fun OrderPlacedScreen(vm: OrderPlacedViewModel, onDone: () -> Unit, onEdit: () -> Unit) {
+    val state by vm.collectAsState()
+    val order = state.order ?: return
+    val distributor = state.distributor ?: return
     val placedAt = remember { SimpleDateFormat("h:mm a", Locale.ENGLISH).format(Date()).uppercase() }
     val steps = listOf(
         Step("Placed", placedAt, StepState.Done),

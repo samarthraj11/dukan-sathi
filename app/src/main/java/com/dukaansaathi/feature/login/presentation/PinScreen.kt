@@ -1,5 +1,11 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.login.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,23 +36,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.DEMO_PIN
-import com.dukaansaathi.knownPhones
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.Keypad
-import com.dukaansaathi.ui.PIN_LENGTH
-import com.dukaansaathi.ui.PinBlanks
-import com.dukaansaathi.ui.PrimaryButton
-import com.dukaansaathi.ui.Yatra
 
 private fun prettyPhone(p: String) = "+91 ${p.take(5)} ${p.drop(5)}"
 
 @Composable
-fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
-    var pin by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
-    val returning = vm.phone in knownPhones
+fun PinScreen(vm: PinViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
+    val state by vm.collectAsState()
+    vm.collectSideEffect { if (it is PinSideEffect.SignedIn) onSignedIn() }
+    val pin = state.pin
+    val error = state.error
+    val returning = state.returning
 
     Column(
         Modifier
@@ -76,7 +75,7 @@ fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
                 .drawBehind { drawRect(Ds.Ink, Offset(0f, size.height - 2.dp.toPx()), Size(size.width, 2.dp.toPx())) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(prettyPhone(vm.phone), Modifier.weight(1f), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(prettyPhone(state.phone), Modifier.weight(1f), fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Box(Modifier.heightIn(min = 48.dp).clickable(onClick = onBack).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
                 Text(
                     "Change",
@@ -108,22 +107,11 @@ fun PinScreen(vm: AppViewModel, onBack: () -> Unit, onSignedIn: () -> Unit) {
 
         PrimaryButton(
             if (returning) "Login" else "Set PIN and continue",
-            onClick = {
-                if (returning && pin != DEMO_PIN) {
-                    error = "Wrong PIN. Try again."
-                    pin = ""
-                } else {
-                    vm.signedIn = true
-                    onSignedIn()
-                }
-            },
+            onClick = vm::submit,
             enabled = pin.length == PIN_LENGTH,
             height = 62.dp,
         )
         Spacer(Modifier.size(14.dp))
-        Keypad { key ->
-            error = ""
-            pin = if (key == "del") pin.dropLast(1) else if (pin.length < PIN_LENGTH) pin + key else pin
-        }
+        Keypad(vm::onKey)
     }
 }

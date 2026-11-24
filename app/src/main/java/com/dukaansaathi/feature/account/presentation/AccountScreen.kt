@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.account.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,19 +29,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.DistributorStatus
-import com.dukaansaathi.distributors
-import com.dukaansaathi.ui.Avatar
-import com.dukaansaathi.ui.BottomNav
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.OutlineButton
-import com.dukaansaathi.ui.Tab
-import com.dukaansaathi.ui.Yatra
 
 /** Placeholder until ledger, payments and returns are designed. */
 @Composable
-fun AccountScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onLogout: () -> Unit) {
+fun AccountScreen(vm: AccountViewModel, onTab: (Tab) -> Unit, onLogout: () -> Unit) {
+    val state by vm.collectAsState()
+    vm.collectSideEffect { if (it is AccountSideEffect.LoggedOut) onLogout() }
     Column(Modifier.fillMaxSize()) {
         Row(
             Modifier
@@ -49,14 +50,14 @@ fun AccountScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onLogout: () -> Unit) 
             }
             Column {
                 Text("Gupta General Store", fontFamily = Yatra, fontSize = 26.sp, lineHeight = 30.sp)
-                Text("+91 ${vm.phone.take(5)} ${vm.phone.drop(5)}", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+                Text("+91 ${state.phone.take(5)} ${state.phone.drop(5)}", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
             }
         }
 
         Column(Modifier.weight(1f).padding(horizontal = 24.dp, vertical = 22.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Text("My distributors", fontFamily = Yatra, fontSize = 26.sp)
             Column {
-                distributors.filter { it.status == DistributorStatus.Active }.forEach { d ->
+                state.distributors.forEach { d ->
                     Row(
                         Modifier.fillMaxWidth().padding(vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -70,7 +71,7 @@ fun AccountScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onLogout: () -> Unit) 
             }
             Text("Ledger, payments and returns are coming soon.", fontSize = 19.sp, color = Ds.Sub)
             Spacer(Modifier.weight(1f))
-            OutlineButton("Log out", onLogout)
+            OutlineButton("Log out", vm::logOut)
         }
 
         BottomNav(Tab.Account, onTab)

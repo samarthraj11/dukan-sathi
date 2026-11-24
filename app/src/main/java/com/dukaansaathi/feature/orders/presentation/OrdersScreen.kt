@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.orders.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,28 +43,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.DistributorStatus
-import com.dukaansaathi.OrderStatus
-import com.dukaansaathi.distributors
-import com.dukaansaathi.rupees
-import com.dukaansaathi.ui.Avatar
-import com.dukaansaathi.ui.BottomNav
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.Tab
-import com.dukaansaathi.ui.Yatra
 
 /** Orders from every distributor in one list, each tagged with who and how much. */
 @Composable
-fun OrdersScreen(vm: AppViewModel, onTab: (Tab) -> Unit) {
-    var filter by remember { mutableStateOf("all") }
-
-    val active = distributors.filter { it.status == DistributorStatus.Active }
-    val monthTotal = vm.orders.sumOf { it.amount }
-    val perDistributor = active
-        .map { d -> d to vm.orders.filter { it.distributorId == d.id }.sumOf { it.amount } }
-        .filter { it.second > 0 }
-    val shown = vm.orders.filter { filter == "all" || it.distributorId == filter }
+fun OrdersScreen(vm: OrdersViewModel, onTab: (Tab) -> Unit) {
+    val state by vm.collectAsState()
+    LaunchedEffect(Unit) { vm.refresh() }
+    val filter = state.filter
+    val active = state.active
+    val monthTotal = state.monthTotal
+    val perDistributor = state.perDistributor
+    val shown = state.shown
 
     Column(Modifier.fillMaxSize()) {
         Column(
@@ -99,7 +96,7 @@ fun OrdersScreen(vm: AppViewModel, onTab: (Tab) -> Unit) {
                     .clip(allShape)
                     .background(if (filter == "all") Ds.Primary else Color.White)
                     .then(if (filter == "all") Modifier else Modifier.border(2.dp, Ds.LineStrong, allShape))
-                    .clickable { filter = "all" }
+                    .clickable { vm.setFilter(ALL_DISTRIBUTORS) }
                     .padding(horizontal = 22.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -112,7 +109,7 @@ fun OrdersScreen(vm: AppViewModel, onTab: (Tab) -> Unit) {
                         .heightIn(min = 46.dp)
                         .clip(allShape)
                         .border(2.dp, if (selected) Ds.Primary else Ds.LineStrong, allShape)
-                        .clickable { filter = d.id }
+                        .clickable { vm.setFilter(d.id) }
                         .padding(start = 6.dp, end = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -125,7 +122,7 @@ fun OrdersScreen(vm: AppViewModel, onTab: (Tab) -> Unit) {
 
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 24.dp)) {
             items(shown, key = { it.id }) { o ->
-                val d = distributors.first { it.id == o.distributorId }
+                val d = state.distributors.first { it.id == o.distributorId }
                 Row(
                     Modifier.fillMaxWidth().padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,

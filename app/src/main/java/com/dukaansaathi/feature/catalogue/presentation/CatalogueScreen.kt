@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.catalogue.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,41 +51,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.Stock
-import com.dukaansaathi.products
-import com.dukaansaathi.rupees
-import com.dukaansaathi.ui.BottomNav
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.DistributorChip
-import com.dukaansaathi.ui.DistributorSheet
-import com.dukaansaathi.ui.Mukta
-import com.dukaansaathi.ui.ProductArt
-import com.dukaansaathi.ui.Stepper
-import com.dukaansaathi.ui.Tab
-import com.dukaansaathi.usualOrder
-
-private enum class Filter { All, Usual, Offers }
 
 @Composable
-fun CatalogueScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> Unit, onOpenCart: () -> Unit) {
+fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> Unit, onOpenCart: () -> Unit) {
+    val state by vm.collectAsState()
+    LaunchedEffect(Unit) { vm.refresh() }
     var sheetOpen by remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf("") }
-    var filter by remember { mutableStateOf(Filter.All) }
 
-    val distributor = vm.distributor
-    val usualIds = usualOrder[distributor.id].orEmpty().keys
-    val items = products
-        .filter { it.distributorId == distributor.id }
-        .filter {
-            when (filter) {
-                Filter.All -> true
-                Filter.Usual -> it.id in usualIds
-                Filter.Offers -> it.offer != null
-            }
-        }
-        .filter { it.name.contains(query.trim(), ignoreCase = true) }
-    val totals = vm.totals()
+    val distributor = state.distributor
+    val query = state.query
+    val filter = state.filter
+    val items = state.items
+    val totals = state.totals
 
     Column(Modifier.fillMaxSize()) {
         Column(
@@ -104,7 +89,7 @@ fun CatalogueScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: ()
                 Icon(Icons.Rounded.Search, null, Modifier.size(26.dp), tint = Ds.Sub)
                 BasicTextField(
                     value = query,
-                    onValueChange = { query = it },
+                    onValueChange = vm::setQuery,
                     modifier = Modifier.weight(1f).semantics { contentDescription = "Search products" },
                     singleLine = true,
                     textStyle = TextStyle(fontFamily = Mukta, fontSize = 22.sp, fontWeight = FontWeight.Medium, color = Ds.Ink),
@@ -121,9 +106,9 @@ fun CatalogueScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: ()
         }
 
         Row(Modifier.padding(start = 24.dp, end = 24.dp, top = 14.dp, bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilterChip("All", filter == Filter.All) { filter = Filter.All }
-            FilterChip("Usual", filter == Filter.Usual) { filter = Filter.Usual }
-            FilterChip("Offers", filter == Filter.Offers, highlight = true) { filter = Filter.Offers }
+            FilterChip("All", filter == CatalogueFilter.All) { vm.setFilter(CatalogueFilter.All) }
+            FilterChip("Usual", filter == CatalogueFilter.Usual) { vm.setFilter(CatalogueFilter.Usual) }
+            FilterChip("Offers", filter == CatalogueFilter.Offers, highlight = true) { vm.setFilter(CatalogueFilter.Offers) }
         }
 
         Box(Modifier.weight(1f)) {
@@ -132,7 +117,7 @@ fun CatalogueScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: ()
                 contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 96.dp),
             ) {
                 items(items, key = { it.id }) { p ->
-                    val qty = vm.qty(p.id)
+                    val qty = state.quantities[p.id] ?: 0
                     Row(
                         Modifier.fillMaxWidth().padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -216,7 +201,7 @@ fun CatalogueScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: ()
     }
 
     if (sheetOpen) {
-        DistributorSheet(vm, onDismiss = { sheetOpen = false }, onAdd = {
+        DistributorSheet(state.distributors, distributor.id, onSelect = vm::selectDistributor, onDismiss = { sheetOpen = false }, onAdd = {
             sheetOpen = false
             onAddDistributor()
         })

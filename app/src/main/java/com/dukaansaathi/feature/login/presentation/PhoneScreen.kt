@@ -1,5 +1,11 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.login.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
@@ -40,18 +46,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.PhoneField
-import com.dukaansaathi.ui.PrimaryButton
-import com.dukaansaathi.ui.Yatra
 
 private enum class Lang { English, Hindi }
 
 @Composable
-fun PhoneScreen(vm: AppViewModel, onContinue: () -> Unit) {
+fun PhoneScreen(vm: PhoneViewModel, onContinue: (String) -> Unit) {
+    val state by vm.collectAsState()
+    vm.collectSideEffect { if (it is PhoneSideEffect.OpenPin) onContinue(it.phone) }
     var lang by remember { mutableStateOf(Lang.English) }
-    val ready = vm.phone.length == 10
+    val ready = state.ready
 
     Column(
         Modifier
@@ -93,12 +96,12 @@ fun PhoneScreen(vm: AppViewModel, onContinue: () -> Unit) {
             }
 
             Text("Your mobile number", Modifier.padding(top = 32.dp, bottom = 8.dp), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            PhoneField(vm.phone, { vm.phone = it }, "98765 43210") { if (ready) onContinue() }
+            PhoneField(state.phone, vm::setPhone, "98765 43210") { vm.continueToPin() }
             Text("Next you will set a 6-digit PIN. No OTP needed.", Modifier.padding(top = 8.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
         }
 
         Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)) {
-            PrimaryButton("Continue", onContinue, enabled = ready, height = 68.dp, fontSize = 25.sp)
+            PrimaryButton("Continue", vm::continueToPin, enabled = ready, height = 68.dp, fontSize = 25.sp)
             Text("Distributor? Use the number registered with us.", Modifier.padding(top = 14.dp), fontSize = 18.sp, color = Ds.Sub, lineHeight = 25.sp)
         }
     }

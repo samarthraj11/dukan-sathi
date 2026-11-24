@@ -1,5 +1,13 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.home.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.domain.pricing.rupees
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,29 +49,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.AppViewModel
-import com.dukaansaathi.OrderStatus
-import com.dukaansaathi.lastOrderItems
-import com.dukaansaathi.priceItems
-import com.dukaansaathi.products
-import com.dukaansaathi.rupees
-import com.dukaansaathi.ui.BottomNav
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.DistributorChip
-import com.dukaansaathi.ui.DistributorSheet
-import com.dukaansaathi.ui.OutlineButton
-import com.dukaansaathi.ui.ProductArt
-import com.dukaansaathi.ui.Tab
-import com.dukaansaathi.ui.Yatra
-import com.dukaansaathi.usualOrder
 
 @Composable
-fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> Unit, onOpenCart: () -> Unit) {
+fun HomeScreen(vm: HomeViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> Unit, onOpenCart: () -> Unit) {
+    val state by vm.collectAsState()
+    LaunchedEffect(Unit) { vm.refresh() }
+    vm.collectSideEffect { if (it is HomeSideEffect.OpenCart) onOpenCart() }
     var sheetOpen by remember { mutableStateOf(false) }
-    val distributor = vm.distributor
-    val active = vm.orders.firstOrNull { it.distributorId == distributor.id && it.status != OrderStatus.Delivered }
-    val last = priceItems(lastOrderItems[distributor.id].orEmpty())
-    val usual = usualOrder[distributor.id].orEmpty().mapNotNull { (id, qty) -> products.firstOrNull { it.id == id }?.let { it to qty } }
+    val distributor = state.distributor
+    val active = state.activeOrder
+    val last = state.lastOrder
+    val usual = state.usual
 
     Column(Modifier.fillMaxSize()) {
         // Header band: who I am, who I order from, and where my order is.
@@ -139,10 +135,7 @@ fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> U
                     .heightIn(min = 76.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(if (againEnabled) Ds.Primary else Ds.Soft)
-                    .clickable(enabled = againEnabled) {
-                        vm.replaceCart(lastOrderItems[distributor.id].orEmpty())
-                        onOpenCart()
-                    }
+                    .clickable(enabled = againEnabled, onClick = vm::orderAgain)
                     .padding(horizontal = 20.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -159,10 +152,7 @@ fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> U
                     Text("Monday usual", fontFamily = Yatra, fontSize = 26.sp)
                     OutlineButton(
                         "Add all",
-                        onClick = {
-                            vm.fillCart(usualOrder[distributor.id].orEmpty())
-                            onOpenCart()
-                        },
+                        onClick = vm::addAllUsual,
                         modifier = Modifier.width(104.dp),
                         height = 46.dp,
                         fontSize = 19.sp,
@@ -203,7 +193,7 @@ fun HomeScreen(vm: AppViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> U
     }
 
     if (sheetOpen) {
-        DistributorSheet(vm, onDismiss = { sheetOpen = false }, onAdd = {
+        DistributorSheet(state.distributors, distributor.id, onSelect = vm::selectDistributor, onDismiss = { sheetOpen = false }, onAdd = {
             sheetOpen = false
             onAddDistributor()
         })

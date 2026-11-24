@@ -1,5 +1,11 @@
-package com.dukaansaathi.ui.screens
+package com.dukaansaathi.feature.adddistributor.presentation
 
+import com.dukaansaathi.core.designsystem.*
+import com.dukaansaathi.core.model.*
+import com.dukaansaathi.ui.theme.*
+import androidx.compose.runtime.getValue
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,16 +41,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.ui.Ds
-import com.dukaansaathi.ui.OutlineButton
-import com.dukaansaathi.ui.PhoneField
-import com.dukaansaathi.ui.PrimaryButton
-import com.dukaansaathi.ui.Yatra
 
 @Composable
-fun AddDistributorScreen(onBack: () -> Unit) {
-    var number by remember { mutableStateOf("") }
-    var sent by remember { mutableStateOf(false) }
+fun AddDistributorScreen(vm: AddDistributorViewModel, onBack: () -> Unit) {
+    val state by vm.collectAsState()
+    val number = state.number
+    val sent = state.sent
 
     Column(
         Modifier
@@ -63,12 +65,12 @@ fun AddDistributorScreen(onBack: () -> Unit) {
         }
 
         Text("Distributor's number", Modifier.padding(top = 28.dp, bottom = 10.dp), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-        PhoneField(number, { sent = false; number = it }, "98100 12345") { if (number.length == 10) sent = true }
+        PhoneField(number, vm::setNumber, "98100 12345") { vm.send() }
 
         Spacer(Modifier.height(20.dp))
         PrimaryButton(
             if (sent) "Request sent" else "Send request",
-            onClick = { sent = true },
+            onClick = vm::send,
             enabled = number.length == 10 && !sent,
             height = 68.dp,
         )
