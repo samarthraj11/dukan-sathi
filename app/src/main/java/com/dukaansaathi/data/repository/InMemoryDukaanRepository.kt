@@ -22,7 +22,7 @@ class InMemoryDukaanRepository : DukaanRepository {
     private var distributorId = "vaishnavi"
 
     // Cart is kept per distributor: key is "distributorId/productId", value is peti and bundles.
-    private val cart = mutableMapOf("vaishnavi/marie" to Qty(peti = 1), "vaishnavi/glucose" to Qty(bundle = 3), "vaishnavi/cream" to Qty(bundle = 2))
+    private val cart = mutableMapOf("vaishnavi/marie35" to Qty(peti = 1), "vaishnavi/crackers" to Qty(bundle = 3), "vaishnavi/choco" to Qty(bundle = 2))
     private val orders = dummyPastOrders.toMutableList()
 
     override fun isKnownPhone(phone: String) = phone in knownPhones

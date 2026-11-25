@@ -179,7 +179,7 @@ fun HomeScreen(vm: HomeViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> 
                                             .clip(RoundedCornerShape(17.dp))
                                             .background(Ds.Primary),
                                         contentAlignment = Alignment.Center,
-                                    ) { Text("${qty.pcs}", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold) }
+                                    ) { Text("${product.pcs(qty)}", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold) }
                                 }
                                 Text(product.name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, lineHeight = 22.sp)
                             }

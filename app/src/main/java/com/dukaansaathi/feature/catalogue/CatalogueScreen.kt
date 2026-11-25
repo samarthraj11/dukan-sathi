@@ -36,6 +36,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -126,7 +129,15 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                     ) {
                         ProductArt(p.art, Modifier.size(72.dp))
                         Column(Modifier.weight(1f)) {
-                            Text(p.name, fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 24.sp)
+                            Text(
+                                buildAnnotatedString {
+                                    append(p.name)
+                                    withStyle(SpanStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium, color = Ds.Sub)) { append("  ${p.size}") }
+                                },
+                                fontSize = 21.sp,
+                                fontWeight = FontWeight.Bold,
+                                lineHeight = 24.sp,
+                            )
                             Row(verticalAlignment = Alignment.Bottom) {
                                 Text(rupees(p.bundlePrice), fontSize = 22.sp, fontWeight = FontWeight.Bold)
                                 Text(" / bundle", fontSize = 17.sp, color = Ds.Sub, modifier = Modifier.padding(bottom = 2.dp))
@@ -167,10 +178,10 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Ds.GoldTint)
                                     .border(2.dp, Ds.Primary, RoundedCornerShape(10.dp))
-                                    .semantics { contentDescription = "${p.name}, ${qty.pcs} pieces. Change" }
+                                    .semantics { contentDescription = "${p.name}, ${p.pcs(qty)} pieces. Change" }
                                     .padding(horizontal = 14.dp),
                                 contentAlignment = Alignment.Center,
-                            ) { Text("${qty.pcs} pcs", color = Ds.Primary, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+                            ) { Text("${p.pcs(qty)} pcs", color = Ds.Primary, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                         }
                     }
                     HorizontalDivider(color = Ds.Line)

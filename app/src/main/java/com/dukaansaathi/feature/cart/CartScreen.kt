@@ -104,7 +104,7 @@ fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Uni
                         ProductArt(line.product.art, Modifier.size(60.dp))
                         Column(Modifier.weight(1f)) {
                             Text(line.product.name, fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 24.sp)
-                            Text("${line.qty.label()}, ${line.qty.pcs} pcs", fontSize = 18.sp, color = Ds.Sub, lineHeight = 22.sp)
+                            Text("${line.qty.label()}, ${line.pcs} pcs", fontSize = 18.sp, color = Ds.Sub, lineHeight = 22.sp)
                             Text(rupees(line.total), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         }
                         Box(

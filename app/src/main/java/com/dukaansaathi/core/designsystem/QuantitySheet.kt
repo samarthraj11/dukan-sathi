@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dukaansaathi.core.model.BUNDLES_PER_PETI
 import com.dukaansaathi.core.model.PCS_PER_BUNDLE
 import com.dukaansaathi.core.model.Product
 import com.dukaansaathi.core.model.Qty
@@ -51,7 +50,7 @@ fun QuantitySheet(product: Product, qty: Qty, onChange: (Qty) -> Unit, onDismiss
                 Column {
                     Text(product.name, fontSize = 26.sp, fontWeight = FontWeight.Bold, lineHeight = 30.sp)
                     Text(
-                        "${rupees(product.bundlePrice)} a bundle, $PCS_PER_BUNDLE pcs",
+                        "${product.size}, ${rupees(product.bundlePrice)} a bundle of $PCS_PER_BUNDLE",
                         fontSize = 18.sp,
                         color = Ds.Sub,
                     )
@@ -61,7 +60,7 @@ fun QuantitySheet(product: Product, qty: Qty, onChange: (Qty) -> Unit, onDismiss
 
             UnitRow(
                 title = "Peti",
-                note = "$BUNDLES_PER_PETI bundles, ${BUNDLES_PER_PETI * PCS_PER_BUNDLE} pcs",
+                note = "${product.bundlesPerPeti} bundles, ${product.pktsPerPeti} pcs",
                 price = rupees(product.petiPrice),
                 count = qty.peti,
                 product = product,
@@ -85,7 +84,7 @@ fun QuantitySheet(product: Product, qty: Qty, onChange: (Qty) -> Unit, onDismiss
             ) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
                     Text("Total", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-                    Text("${qty.pcs} pcs", fontFamily = Yatra, fontSize = 38.sp, lineHeight = 42.sp)
+                    Text("${product.pcs(qty)} pcs", fontFamily = Yatra, fontSize = 38.sp, lineHeight = 42.sp)
                 }
                 Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
@@ -93,7 +92,7 @@ fun QuantitySheet(product: Product, qty: Qty, onChange: (Qty) -> Unit, onDismiss
                         fontSize = 18.sp,
                         color = Ds.Sub,
                     )
-                    Text(rupees(product.bundlePrice * qty.bundles), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(rupees(product.bundlePrice * product.bundles(qty)), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
             }
 

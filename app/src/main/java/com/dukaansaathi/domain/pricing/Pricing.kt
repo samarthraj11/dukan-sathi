@@ -12,11 +12,11 @@ import kotlin.math.roundToInt
 /** Prices a cart ("productId" to peti and bundles) against the catalogue, lines in catalogue order. */
 fun priceItems(items: Map<String, Qty>, catalogue: List<Product>): Totals {
     val lines = items.filterValues { !it.isEmpty }.mapNotNull { (id, qty) ->
-        catalogue.firstOrNull { it.id == id }?.let { Line(it, qty, it.bundlePrice * qty.bundles) }
+        catalogue.firstOrNull { it.id == id }?.let { Line(it, qty, it.bundlePrice * it.bundles(qty), it.pcs(qty)) }
     }.sortedBy { catalogue.indexOf(it.product) }
     val subtotal = lines.sumOf { it.total }
     val gst = (subtotal * GST_RATE).roundToInt()
-    return Totals(lines, subtotal, gst, subtotal + gst, lines.sumOf { it.qty.pcs })
+    return Totals(lines, subtotal, gst, subtotal + gst, lines.sumOf { it.pcs })
 }
 
 private val inr = NumberFormat.getIntegerInstance(Locale("en", "IN"))

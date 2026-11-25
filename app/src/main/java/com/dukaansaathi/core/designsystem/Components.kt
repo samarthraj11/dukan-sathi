@@ -53,6 +53,10 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.drawscope.Stroke
+import com.dukaansaathi.core.model.Motif
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -82,10 +86,82 @@ fun Avatar(initial: String, color: Color, size: Dp = 38.dp, faded: Boolean = fal
 fun ProductArt(art: Art, modifier: Modifier = Modifier) {
     Canvas(modifier.aspectRatio(1f)) {
         val u = size.width / 64f
-        drawRoundRect(art.bg, cornerRadius = CornerRadius(10 * u, 10 * u))
-        drawRoundRect(Color.White, Offset(10 * u, 18 * u), Size(44 * u, 28 * u), CornerRadius(3 * u, 3 * u))
-        drawRect(art.stripe, Offset(14 * u, 24 * u), Size(36 * u, 4 * u))
-        drawRect(art.line, Offset(14 * u, 32 * u), Size(24 * u, 3 * u))
+        fun o(x: Float, y: Float) = Offset(x * u, y * u)
+        fun sz(w: Float, h: Float) = Size(w * u, h * u)
+        val biscuit = Color(0xFFDDB574)
+        val biscuitDark = Color(0xFFBF9650)
+
+        // Tile, then an upright packet with crimped ends and a white label.
+        drawRoundRect(lerp(art.pack, Color.White, 0.78f), cornerRadius = CornerRadius(10 * u, 10 * u))
+        drawRoundRect(art.pack, o(11f, 6f), sz(42f, 52f), CornerRadius(3 * u, 3 * u))
+        val crimp = lerp(art.pack, Color.Black, 0.18f)
+        drawRect(crimp, o(11f, 6f), sz(42f, 4f))
+        drawRect(crimp, o(11f, 54f), sz(42f, 4f))
+        for (i in 0..6) {
+            drawLine(lerp(art.pack, Color.White, 0.35f), o(14f + i * 6f, 6.5f), o(14f + i * 6f, 9.5f), strokeWidth = 1f * u)
+            drawLine(lerp(art.pack, Color.White, 0.35f), o(14f + i * 6f, 54.5f), o(14f + i * 6f, 57.5f), strokeWidth = 1f * u)
+        }
+        drawRoundRect(Color.White, o(14f, 14f), sz(36f, 30f), CornerRadius(3 * u, 3 * u))
+        drawRoundRect(art.accent, o(14f, 47f), sz(36f, 4f), CornerRadius(1.5f * u, 1.5f * u))
+
+        when (art.motif) {
+            Motif.Round -> {
+                drawCircle(biscuit, 11 * u, o(32f, 29f))
+                drawCircle(biscuitDark, 8 * u, o(32f, 29f), style = Stroke(1f * u))
+                for (i in 0 until 8) {
+                    val ang = Math.toRadians(i * 45.0)
+                    drawCircle(biscuitDark, 1.1f * u, o(32f + 5.2f * Math.cos(ang).toFloat(), 29f + 5.2f * Math.sin(ang).toFloat()))
+                }
+            }
+            Motif.Square -> {
+                drawRoundRect(biscuit, o(21f, 18f), sz(22f, 22f), CornerRadius(2 * u, 2 * u))
+                for (r in 0..2) for (k in 0..2) drawCircle(biscuitDark, 1.3f * u, o(26f + k * 6f, 23f + r * 6f))
+            }
+            Motif.Butter -> {
+                drawCircle(biscuit, 10 * u, o(30f, 32f))
+                drawCircle(biscuitDark, 7 * u, o(30f, 32f), style = Stroke(1f * u))
+                drawRoundRect(art.accent2, o(33f, 17f), sz(13f, 8f), CornerRadius(1.5f * u, 1.5f * u))
+                drawLine(Color.White, o(35f, 19.5f), o(41f, 19.5f), strokeWidth = 1.2f * u)
+            }
+            Motif.Drop -> {
+                val drop = Path().apply {
+                    moveTo(32 * u, 17 * u)
+                    cubicTo(40 * u, 27 * u, 42 * u, 31 * u, 42 * u, 34 * u)
+                    cubicTo(42 * u, 40 * u, 37 * u, 42 * u, 32 * u, 42 * u)
+                    cubicTo(27 * u, 42 * u, 22 * u, 40 * u, 22 * u, 34 * u)
+                    cubicTo(22 * u, 31 * u, 24 * u, 27 * u, 32 * u, 17 * u)
+                    close()
+                }
+                drawPath(drop, art.pack.copy(alpha = 0.35f))
+                drawPath(drop, art.accent, style = Stroke(1.6f * u))
+                drawCircle(Color.White, 2.2f * u, o(28f, 33f))
+            }
+            Motif.Sandwich -> {
+                drawRoundRect(biscuit, o(19f, 19f), sz(26f, 8f), CornerRadius(3.5f * u, 3.5f * u))
+                drawRoundRect(art.accent2, o(18f, 27f), sz(28f, 6f), CornerRadius(3 * u, 3 * u))
+                drawRoundRect(biscuit, o(19f, 33f), sz(26f, 8f), CornerRadius(3.5f * u, 3.5f * u))
+                for (k in 0..2) drawCircle(biscuitDark, 1f * u, o(25f + k * 7f, 23f))
+            }
+            Motif.TwoTone -> {
+                drawCircle(Color(0xFFFFF6E3), 11 * u, o(32f, 29f))
+                drawArc(art.accent2, 90f, 180f, true, o(21f, 18f), sz(22f, 22f))
+                drawCircle(art.accent2, 11 * u, o(32f, 29f), style = Stroke(1f * u))
+                drawCircle(Color(0xFFFFF6E3), 2.4f * u, o(27f, 29f))
+                drawCircle(art.accent2, 2.4f * u, o(37f, 29f))
+            }
+            Motif.Cake -> {
+                drawRoundRect(Color(0xFFF1D9A0), o(19f, 24f), sz(26f, 14f), CornerRadius(2 * u, 2 * u))
+                drawRoundRect(art.accent2, o(18f, 19f), sz(28f, 7f), CornerRadius(3 * u, 3 * u))
+                if (art.pack == Color(0xFFA58BD0)) {
+                    drawCircle(Color(0xFFD9695A), 2f * u, o(25f, 22.5f))
+                    drawCircle(Color(0xFF6FAF77), 2f * u, o(32f, 22.5f))
+                    drawCircle(Color(0xFFD9695A), 2f * u, o(39f, 22.5f))
+                } else {
+                    drawRect(art.accent2, o(23f, 26f), sz(3f, 5f))
+                    drawRect(art.accent2, o(35f, 26f), sz(3f, 7f))
+                }
+            }
+        }
     }
 }
 
