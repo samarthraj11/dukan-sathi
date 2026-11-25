@@ -22,24 +22,24 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.dukaansaathi.app.AppContainer
 import com.dukaansaathi.core.designsystem.Tab
-import com.dukaansaathi.feature.account.presentation.AccountScreen
-import com.dukaansaathi.feature.account.presentation.AccountViewModel
-import com.dukaansaathi.feature.adddistributor.presentation.AddDistributorScreen
-import com.dukaansaathi.feature.adddistributor.presentation.AddDistributorViewModel
-import com.dukaansaathi.feature.cart.presentation.CartScreen
-import com.dukaansaathi.feature.cart.presentation.CartViewModel
-import com.dukaansaathi.feature.catalogue.presentation.CatalogueScreen
-import com.dukaansaathi.feature.catalogue.presentation.CatalogueViewModel
-import com.dukaansaathi.feature.home.presentation.HomeScreen
-import com.dukaansaathi.feature.home.presentation.HomeViewModel
-import com.dukaansaathi.feature.login.presentation.PhoneScreen
-import com.dukaansaathi.feature.login.presentation.PhoneViewModel
-import com.dukaansaathi.feature.login.presentation.PinScreen
-import com.dukaansaathi.feature.login.presentation.PinViewModel
-import com.dukaansaathi.feature.orders.presentation.OrdersScreen
-import com.dukaansaathi.feature.orders.presentation.OrdersViewModel
-import com.dukaansaathi.feature.placed.presentation.OrderPlacedScreen
-import com.dukaansaathi.feature.placed.presentation.OrderPlacedViewModel
+import com.dukaansaathi.feature.account.AccountScreen
+import com.dukaansaathi.feature.account.AccountViewModel
+import com.dukaansaathi.feature.adddistributor.AddDistributorScreen
+import com.dukaansaathi.feature.adddistributor.AddDistributorViewModel
+import com.dukaansaathi.feature.cart.CartScreen
+import com.dukaansaathi.feature.cart.CartViewModel
+import com.dukaansaathi.feature.catalogue.CatalogueScreen
+import com.dukaansaathi.feature.catalogue.CatalogueViewModel
+import com.dukaansaathi.feature.home.HomeScreen
+import com.dukaansaathi.feature.home.HomeViewModel
+import com.dukaansaathi.feature.login.PhoneScreen
+import com.dukaansaathi.feature.login.PhoneViewModel
+import com.dukaansaathi.feature.login.PinScreen
+import com.dukaansaathi.feature.login.PinViewModel
+import com.dukaansaathi.feature.orders.OrdersScreen
+import com.dukaansaathi.feature.orders.OrdersViewModel
+import com.dukaansaathi.feature.placed.OrderPlacedScreen
+import com.dukaansaathi.feature.placed.OrderPlacedViewModel
 
 private const val NAV_ANIMATION_MS = 300
 
