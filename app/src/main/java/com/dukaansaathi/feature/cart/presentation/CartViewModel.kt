@@ -1,6 +1,7 @@
 package com.dukaansaathi.feature.cart.presentation
 
 import androidx.lifecycle.ViewModel
+import com.dukaansaathi.core.model.Qty
 import com.dukaansaathi.domain.repository.DukaanRepository
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
@@ -16,7 +17,7 @@ class CartViewModel(private val repository: DukaanRepository) : ViewModel(), Orb
 
     fun refresh() = intent { reduce { buildState() } }
 
-    fun setQty(productId: String, qty: Int) = intent {
+    fun setQty(productId: String, qty: Qty) = intent {
         repository.setQty(productId, qty)
         reduce { buildState() }
     }

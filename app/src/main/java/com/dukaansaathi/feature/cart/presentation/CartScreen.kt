@@ -5,6 +5,13 @@ import com.dukaansaathi.core.model.*
 import com.dukaansaathi.domain.pricing.rupees
 import com.dukaansaathi.ui.theme.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.LaunchedEffect
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -49,6 +56,8 @@ fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Uni
     val t = state.totals
     val hasOffer = state.hasOffer
     val toGo = state.toGo
+    var editing by remember { mutableStateOf<Product?>(null) }
+    CartQuantitySheet(vm, editing, t.lines) { editing = null }
 
     Column(
         Modifier
@@ -95,9 +104,19 @@ fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Uni
                         ProductArt(line.product.art, Modifier.size(60.dp))
                         Column(Modifier.weight(1f)) {
                             Text(line.product.name, fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 24.sp)
-                            Text(rupees(line.total), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Ds.Sub)
+                            Text("${line.qty.label()}, ${line.qty.pcs} pcs", fontSize = 18.sp, color = Ds.Sub, lineHeight = 22.sp)
+                            Text(rupees(line.total), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         }
-                        Stepper(line.qty, line.product.name) { vm.setQty(line.product.id, it) }
+                        Box(
+                            Modifier
+                                .heightIn(min = 48.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(2.dp, Ds.Primary, RoundedCornerShape(10.dp))
+                                .clickable { editing = line.product }
+                                .semantics { contentDescription = "Change ${line.product.name}" }
+                                .padding(horizontal = 18.dp),
+                            contentAlignment = Alignment.Center,
+                        ) { Text("Change", color = Ds.Primary, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                     }
                     HorizontalDivider(color = Ds.Line)
                 }
@@ -115,7 +134,7 @@ fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Uni
                     ) {
                         Icon(Icons.Rounded.Star, null, Modifier.size(28.dp))
                         Text(
-                            if (toGo > 0) "Add ${rupees(toGo)} more, get 1 carton free" else "1 carton free added",
+                            if (toGo > 0) "Add ${rupees(toGo)} more, get 1 bundle free" else "1 bundle free added",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             lineHeight = 25.sp,
@@ -147,6 +166,17 @@ fun CartScreen(vm: CartViewModel, onBack: () -> Unit, onOpenCatalogue: () -> Uni
             )
         }
     }
+}
+
+@Composable
+private fun CartQuantitySheet(vm: CartViewModel, product: Product?, lines: List<Line>, onDismiss: () -> Unit) {
+    if (product == null) return
+    QuantitySheet(
+        product = product,
+        qty = lines.firstOrNull { it.product.id == product.id }?.qty ?: Qty(),
+        onChange = { vm.setQty(product.id, it) },
+        onDismiss = onDismiss,
+    )
 }
 
 @Composable

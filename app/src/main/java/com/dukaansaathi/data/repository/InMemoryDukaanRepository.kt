@@ -4,6 +4,7 @@ import com.dukaansaathi.core.model.Distributor
 import com.dukaansaathi.core.model.Order
 import com.dukaansaathi.core.model.OrderStatus
 import com.dukaansaathi.core.model.Product
+import com.dukaansaathi.core.model.Qty
 import com.dukaansaathi.core.model.Totals
 import com.dukaansaathi.data.local.DEMO_PIN
 import com.dukaansaathi.data.local.dummyDistributors
@@ -20,8 +21,8 @@ class InMemoryDukaanRepository : DukaanRepository {
     private var phone = ""
     private var distributorId = "vaishnavi"
 
-    // Cart is kept per distributor: key is "distributorId/productId", value is cartons.
-    private val cart = mutableMapOf("vaishnavi/marie" to 5, "vaishnavi/glucose" to 3, "vaishnavi/cream" to 2)
+    // Cart is kept per distributor: key is "distributorId/productId", value is peti and bundles.
+    private val cart = mutableMapOf("vaishnavi/marie" to Qty(peti = 1), "vaishnavi/glucose" to Qty(bundle = 3), "vaishnavi/cream" to Qty(bundle = 2))
     private val orders = dummyPastOrders.toMutableList()
 
     override fun isKnownPhone(phone: String) = phone in knownPhones
@@ -35,21 +36,21 @@ class InMemoryDukaanRepository : DukaanRepository {
     override fun selectDistributor(id: String) { distributorId = id }
 
     override fun products(): List<Product> = dummyProducts.filter { it.distributorId == distributorId }
-    override fun usualOrder(): Map<String, Int> = dummyUsualOrder[distributorId].orEmpty()
-    override fun lastOrder(): Map<String, Int> = dummyLastOrder[distributorId].orEmpty()
+    override fun usualOrder(): Map<String, Qty> = dummyUsualOrder[distributorId].orEmpty()
+    override fun lastOrder(): Map<String, Qty> = dummyLastOrder[distributorId].orEmpty()
 
-    override fun qty(productId: String) = cart["$distributorId/$productId"] ?: 0
+    override fun qty(productId: String) = cart["$distributorId/$productId"] ?: Qty()
 
-    override fun setQty(productId: String, qty: Int) {
+    override fun setQty(productId: String, qty: Qty) {
         val key = "$distributorId/$productId"
-        if (qty <= 0) cart.remove(key) else cart[key] = qty
+        if (qty.isEmpty) cart.remove(key) else cart[key] = qty
     }
 
     private fun clearCart() = cart.keys.filter { it.startsWith("$distributorId/") }.forEach { cart.remove(it) }
 
-    override fun fillCart(items: Map<String, Int>) = items.forEach { (id, q) -> setQty(id, q) }
+    override fun fillCart(items: Map<String, Qty>) = items.forEach { (id, q) -> setQty(id, q) }
 
-    override fun replaceCart(items: Map<String, Int>) {
+    override fun replaceCart(items: Map<String, Qty>) {
         clearCart()
         fillCart(items)
     }
@@ -64,7 +65,7 @@ class InMemoryDukaanRepository : DukaanRepository {
 
     override fun placeOrder(): Order? {
         val t = totals()
-        if (t.cartons == 0) return null
+        if (t.pcs == 0) return null
         val order = Order(
             id = "o${System.currentTimeMillis()}",
             distributorId = distributorId,

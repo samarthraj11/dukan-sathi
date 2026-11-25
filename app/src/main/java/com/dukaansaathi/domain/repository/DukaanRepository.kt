@@ -3,6 +3,7 @@ package com.dukaansaathi.domain.repository
 import com.dukaansaathi.core.model.Distributor
 import com.dukaansaathi.core.model.Order
 import com.dukaansaathi.core.model.Product
+import com.dukaansaathi.core.model.Qty
 import com.dukaansaathi.core.model.Totals
 
 /** Everything the screens need. The in-memory version is replaced by a backend later. */
@@ -21,12 +22,12 @@ interface DukaanRepository {
 
     // Catalogue and cart, always for the selected distributor
     fun products(): List<Product>
-    fun usualOrder(): Map<String, Int>
-    fun lastOrder(): Map<String, Int>
-    fun qty(productId: String): Int
-    fun setQty(productId: String, qty: Int)
-    fun fillCart(items: Map<String, Int>)
-    fun replaceCart(items: Map<String, Int>)
+    fun usualOrder(): Map<String, Qty>
+    fun lastOrder(): Map<String, Qty>
+    fun qty(productId: String): Qty
+    fun setQty(productId: String, qty: Qty)
+    fun fillCart(items: Map<String, Qty>)
+    fun replaceCart(items: Map<String, Qty>)
     fun totals(): Totals
 
     // Orders from every distributor

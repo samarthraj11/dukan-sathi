@@ -133,9 +133,9 @@ fun OutlineButton(
     }
 }
 
-/** Carton stepper. Big targets, no typing. */
+/** Count stepper (peti or bundle). Big targets, no typing. */
 @Composable
-fun Stepper(qty: Int, name: String, onChange: (Int) -> Unit) {
+fun Stepper(qty: Int, name: String, unit: String, onChange: (Int) -> Unit) {
     val shape = RoundedCornerShape(10.dp)
     Row(
         Modifier
@@ -146,7 +146,7 @@ fun Stepper(qty: Int, name: String, onChange: (Int) -> Unit) {
         Box(
             Modifier
                 .size(42.dp, 48.dp)
-                .semantics { contentDescription = "Remove one carton of $name" }
+                .semantics { contentDescription = "Remove one $unit of $name" }
                 .clickable { onChange(qty - 1) },
             contentAlignment = Alignment.Center,
         ) { Text("−", fontSize = 28.sp, fontWeight = FontWeight.SemiBold) }
@@ -157,7 +157,7 @@ fun Stepper(qty: Int, name: String, onChange: (Int) -> Unit) {
             Modifier
                 .size(42.dp, 48.dp)
                 .background(Ds.Primary)
-                .semantics { contentDescription = "Add one carton of $name" }
+                .semantics { contentDescription = "Add one $unit of $name" }
                 .clickable { onChange(qty + 1) },
             contentAlignment = Alignment.Center,
         ) { Text("+", fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = Color.White) }

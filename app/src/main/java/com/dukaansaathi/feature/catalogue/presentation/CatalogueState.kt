@@ -10,6 +10,6 @@ data class CatalogueState(
     val query: String = "",
     val filter: CatalogueFilter = CatalogueFilter.All,
     val items: List<Product> = emptyList(),
-    val quantities: Map<String, Int> = emptyMap(),
+    val quantities: Map<String, Qty> = emptyMap(),
     val totals: Totals,
 )

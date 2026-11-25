@@ -7,5 +7,5 @@ data class HomeState(
     val distributors: List<Distributor>,
     val activeOrder: Order?,
     val lastOrder: Totals,
-    val usual: List<Pair<Product, Int>>,
+    val usual: List<Pair<Product, Qty>>,
 )

@@ -7,6 +7,7 @@ import com.dukaansaathi.core.model.DistributorStatus
 import com.dukaansaathi.core.model.Order
 import com.dukaansaathi.core.model.OrderStatus
 import com.dukaansaathi.core.model.Product
+import com.dukaansaathi.core.model.Qty
 import com.dukaansaathi.core.model.Stock
 import com.dukaansaathi.core.model.Tone
 import com.dukaansaathi.ui.theme.Ds
@@ -26,13 +27,13 @@ val dummyDistributors = listOf(
 private fun c(hex: Long) = Color(0xFF000000 or hex)
 
 val dummyProducts = listOf(
-    Product("marie", "vaishnavi", "Marie Gold", 456, Stock.In, offer = "10+1 free", art = Art(c(0xE7C46A), Ds.Stamp, Ds.Ink)),
-    Product("glucose", "vaishnavi", "Glucose Plus", 540, Stock.In, art = Art(c(0x6FBF73), Ds.Green, Ds.Ink)),
-    Product("rusk", "vaishnavi", "Milk Rusk", 360, Stock.Low, left = 4, art = Art(c(0xEE8B6E), Ds.Ink, Ds.Stamp)),
-    Product("cream", "vaishnavi", "Cream Sandwich", 720, Stock.In, art = Art(c(0x9B8CF0), Ds.Ink, Ds.Sub)),
-    Product("digestive", "verma", "Digestive Wheat", 600, Stock.In, art = Art(c(0xD8B27A), Ds.Teal, Ds.Ink)),
-    Product("crackers", "verma", "Salted Crackers", 420, Stock.In, art = Art(c(0x8FC7C9), Ds.Ink, Ds.Teal)),
-    Product("choco", "verma", "Choco Cream", 690, Stock.Low, left = 6, art = Art(c(0xB98C7A), Ds.Gold, Ds.Ink)),
+    Product("marie", "vaishnavi", "Marie Gold", 144, Stock.In, offer = "10+1 free", art = Art(c(0xE7C46A), Ds.Stamp, Ds.Ink)),
+    Product("glucose", "vaishnavi", "Glucose Plus", 120, Stock.In, art = Art(c(0x6FBF73), Ds.Green, Ds.Ink)),
+    Product("rusk", "vaishnavi", "Milk Rusk", 96, Stock.Low, left = 4, art = Art(c(0xEE8B6E), Ds.Ink, Ds.Stamp)),
+    Product("cream", "vaishnavi", "Cream Sandwich", 180, Stock.In, art = Art(c(0x9B8CF0), Ds.Ink, Ds.Sub)),
+    Product("digestive", "verma", "Digestive Wheat", 156, Stock.In, art = Art(c(0xD8B27A), Ds.Teal, Ds.Ink)),
+    Product("crackers", "verma", "Salted Crackers", 108, Stock.In, art = Art(c(0x8FC7C9), Ds.Ink, Ds.Teal)),
+    Product("choco", "verma", "Choco Cream", 168, Stock.Low, left = 6, art = Art(c(0xB98C7A), Ds.Gold, Ds.Ink)),
 )
 
 val dummyPastOrders = listOf(
@@ -42,14 +43,14 @@ val dummyPastOrders = listOf(
     Order("o214", "verma", "#214", "Tue 11 Nov", 3150, OrderStatus.Delivered),
 )
 
-/** "Usual" order shown on Home, in cartons. */
-val dummyUsualOrder: Map<String, Map<String, Int>> = mapOf(
-    "vaishnavi" to mapOf("marie" to 5, "glucose" to 3, "rusk" to 2),
-    "verma" to mapOf("digestive" to 4, "crackers" to 2),
+/** "Usual" order shown on Home, in petis and bundles. */
+val dummyUsualOrder: Map<String, Map<String, Qty>> = mapOf(
+    "vaishnavi" to mapOf("marie" to Qty(peti = 1), "glucose" to Qty(bundle = 6), "rusk" to Qty(bundle = 4)),
+    "verma" to mapOf("digestive" to Qty(bundle = 8), "crackers" to Qty(bundle = 6)),
 )
 
 /** Items of each distributor's latest delivered order, for "Order again". */
-val dummyLastOrder: Map<String, Map<String, Int>> = mapOf(
-    "vaishnavi" to mapOf("marie" to 5, "glucose" to 3, "cream" to 2),
-    "verma" to mapOf("digestive" to 4, "crackers" to 2),
+val dummyLastOrder: Map<String, Map<String, Qty>> = mapOf(
+    "vaishnavi" to mapOf("marie" to Qty(peti = 1), "glucose" to Qty(bundle = 3), "cream" to Qty(bundle = 2)),
+    "verma" to mapOf("digestive" to Qty(bundle = 8), "crackers" to Qty(bundle = 6)),
 )

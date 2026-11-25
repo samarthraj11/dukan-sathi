@@ -57,6 +57,7 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
     val state by vm.collectAsState()
     LaunchedEffect(Unit) { vm.refresh() }
     var sheetOpen by remember { mutableStateOf(false) }
+    var editing by remember { mutableStateOf<Product?>(null) }
 
     val distributor = state.distributor
     val query = state.query
@@ -117,22 +118,25 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                 contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 96.dp),
             ) {
                 items(items, key = { it.id }) { p ->
-                    val qty = state.quantities[p.id] ?: 0
+                    val qty = state.quantities[p.id] ?: Qty()
                     Row(
-                        Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                        Modifier.fillMaxWidth().clickable { editing = p }.padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         ProductArt(p.art, Modifier.size(72.dp))
                         Column(Modifier.weight(1f)) {
                             Text(p.name, fontSize = 21.sp, fontWeight = FontWeight.Bold, lineHeight = 24.sp)
-                            Text(rupees(p.price), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(rupees(p.bundlePrice), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                Text(" / bundle", fontSize = 17.sp, color = Ds.Sub, modifier = Modifier.padding(bottom = 2.dp))
+                            }
                             Row(Modifier.heightIn(min = 24.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 when (p.stock) {
                                     Stock.In -> Box(Modifier.size(10.dp).clip(CircleShape).background(Ds.Green))
                                     Stock.Low -> {
                                         Box(Modifier.size(10.dp).clip(CircleShape).background(Ds.Amber))
-                                        Text("${p.left} left", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Ds.AmberText)
+                                        Text("${p.left} bundles left", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Ds.AmberText)
                                     }
                                     Stock.Out -> Text("Out of stock", fontSize = 17.sp, color = Ds.Sub)
                                 }
@@ -146,19 +150,27 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                                 }
                             }
                         }
-                        if (qty > 0) {
-                            Stepper(qty, p.name) { vm.setQty(p.id, it) }
-                        } else {
+                        if (qty.isEmpty) {
                             Box(
                                 Modifier
                                     .heightIn(min = 48.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Ds.Primary)
-                                    .clickable { vm.setQty(p.id, 1) }
                                     .semantics { contentDescription = "Add ${p.name}" }
                                     .padding(horizontal = 24.dp),
                                 contentAlignment = Alignment.Center,
                             ) { Text("Add", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
+                        } else {
+                            Box(
+                                Modifier
+                                    .heightIn(min = 48.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Ds.GoldTint)
+                                    .border(2.dp, Ds.Primary, RoundedCornerShape(10.dp))
+                                    .semantics { contentDescription = "${p.name}, ${qty.pcs} pieces. Change" }
+                                    .padding(horizontal = 14.dp),
+                                contentAlignment = Alignment.Center,
+                            ) { Text("${qty.pcs} pcs", color = Ds.Primary, fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                         }
                     }
                     HorizontalDivider(color = Ds.Line)
@@ -168,7 +180,7 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                 }
             }
 
-            if (totals.cartons > 0) {
+            if (totals.pcs > 0) {
                 Row(
                     Modifier
                         .align(Alignment.BottomCenter)
@@ -181,7 +193,7 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column {
-                        Text("${totals.cartons} cartons", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                        Text("${totals.pcs} pcs", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Medium)
                         Text(rupees(totals.subtotal), color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
                     }
                     Box(
@@ -198,6 +210,15 @@ fun CatalogueScreen(vm: CatalogueViewModel, onTab: (Tab) -> Unit, onAddDistribut
         }
 
         BottomNav(Tab.Catalogue, onTab)
+    }
+
+    editing?.let { p ->
+        QuantitySheet(
+            product = p,
+            qty = state.quantities[p.id] ?: Qty(),
+            onChange = { vm.setQty(p.id, it) },
+            onDismiss = { editing = null },
+        )
     }
 
     if (sheetOpen) {

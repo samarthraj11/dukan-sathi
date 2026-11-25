@@ -1,6 +1,7 @@
 package com.dukaansaathi.feature.catalogue.presentation
 
 import androidx.lifecycle.ViewModel
+import com.dukaansaathi.core.model.Qty
 import com.dukaansaathi.domain.repository.DukaanRepository
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
@@ -33,7 +34,7 @@ class CatalogueViewModel(private val repository: DukaanRepository) : ViewModel()
     fun setQuery(query: String) = intent { reduce { buildState(state.copy(query = query)) } }
     fun setFilter(filter: CatalogueFilter) = intent { reduce { buildState(state.copy(filter = filter)) } }
 
-    fun setQty(productId: String, qty: Int) = intent {
+    fun setQty(productId: String, qty: Qty) = intent {
         repository.setQty(productId, qty)
         reduce { buildState(state) }
     }

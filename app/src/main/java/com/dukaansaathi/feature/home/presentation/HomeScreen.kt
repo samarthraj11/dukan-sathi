@@ -128,7 +128,7 @@ fun HomeScreen(vm: HomeViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> 
                 .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(22.dp),
         ) {
-            val againEnabled = last.cartons > 0
+            val againEnabled = last.pcs > 0
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -142,7 +142,7 @@ fun HomeScreen(vm: HomeViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> 
             ) {
                 Column {
                     Text("Order again", color = Color.White, fontSize = 27.sp, fontWeight = FontWeight.Bold)
-                    Text("${last.cartons} cartons, ${rupees(last.total)}", color = Color.White.copy(alpha = 0.9f), fontSize = 18.sp)
+                    Text("${last.pcs} pcs, ${rupees(last.total)}", color = Color.White.copy(alpha = 0.9f), fontSize = 18.sp)
                 }
                 Icon(Icons.Rounded.Repeat, null, Modifier.size(34.dp), tint = Color.White)
             }
@@ -179,7 +179,7 @@ fun HomeScreen(vm: HomeViewModel, onTab: (Tab) -> Unit, onAddDistributor: () -> 
                                             .clip(RoundedCornerShape(17.dp))
                                             .background(Ds.Primary),
                                         contentAlignment = Alignment.Center,
-                                    ) { Text("$qty", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold) }
+                                    ) { Text("${qty.pcs}", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold) }
                                 }
                                 Text(product.name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, lineHeight = 22.sp)
                             }
